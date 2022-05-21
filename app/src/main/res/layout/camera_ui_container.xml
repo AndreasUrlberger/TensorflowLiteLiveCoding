@@ -20,13 +20,6 @@
     android:layout_height="match_parent"
     android:layoutDirection="ltr">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Time: 89ms"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:padding="8dp"
-        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,4 +11,16 @@
     <color name="icActive">#FFFFFFFF</color>
     <color name="icFocused">#DDFFFFFF</color>
     <color name="icPressed">#AAFFFFFF</color>
+
+
+    <color name="selection0">#ffe6194B</color>
+    <color name="selection0Light">#80e6194B</color>
+    <color name="selection1">#ff3cb44b</color>
+    <color name="selection1Light">#803cb44b</color>
+    <color name="selection2">#ff000075</color>
+    <color name="selection2Light">#80000075</color>
+    <color name="selection3">#fff58231</color>
+    <color name="selection3Light">#80f58231</color>
+    <color name="selection4">#fff032e6</color>
+    <color name="selection4Light">#80f032e6</color>
 </resources>

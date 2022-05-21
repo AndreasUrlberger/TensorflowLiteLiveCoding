@@ -1,59 +1,37 @@
-/*
- * Copyright 2020 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.example.tensorflowlitelivetemplate;
+package com.example.tensorflowlitelivetemplate
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.hardware.display.DisplayManager
+import android.media.Image
 import android.os.Bundle
+import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.camera.core.*
+import androidx.camera.core.ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.Navigation
 import com.example.tensorflowlitelivetemplate.databinding.CameraUiContainerBinding
 import com.example.tensorflowlitelivetemplate.databinding.FragmentCameraBinding
+import java.io.File
+import java.io.FileOutputStream
 import java.nio.ByteBuffer
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-
-/** Helper type alias used for analysis use case callbacks */
-typealias LumaListener = (luma: Double) -> Unit
-
-/**
- * Main fragment for this app. Implements all camera operations including:
- * - Viewfinder
- * - Photo taking
- * - Image analysis
- */
 class CameraFragment : Fragment() {
 
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
@@ -65,7 +43,6 @@ class CameraFragment : Fragment() {
     private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
-    private var imageCapture: ImageCapture? = null
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
@@ -89,7 +66,6 @@ class CameraFragment : Fragment() {
         override fun onDisplayChanged(displayId: Int) = view?.let { view ->
             if (displayId == this@CameraFragment.displayId) {
                 Log.d(TAG, "Rotation changed: ${view.display.rotation}")
-                imageCapture?.targetRotation = view.display.rotation
                 imageAnalyzer?.targetRotation = view.display.rotation
             }
         } ?: Unit
@@ -212,33 +188,19 @@ class CameraFragment : Fragment() {
             .setTargetRotation(rotation)
             .build()
 
-        // ImageCapture
-        imageCapture = ImageCapture.Builder()
-            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-            // We request aspect ratio but no resolution to match preview config, but letting
-            // CameraX optimize for whatever specific resolution best fits our use cases
-            .setTargetAspectRatio(screenAspectRatio)
-            // Set initial target rotation, we will have to call this again if rotation changes
-            // during the lifecycle of this use case
-            .setTargetRotation(rotation)
-            .build()
-
         // ImageAnalysis
         imageAnalyzer = ImageAnalysis.Builder()
             // We request aspect ratio but no resolution
             .setTargetAspectRatio(screenAspectRatio)
+            .setOutputImageFormat(OUTPUT_IMAGE_FORMAT_RGBA_8888)
             // Set initial target rotation, we will have to call this again if rotation changes
             // during the lifecycle of this use case
-            .setTargetRotation(rotation)
+            //.setTargetRotation(rotation)
+            .setOutputImageRotationEnabled(true)
             .build()
             // The analyzer can then be assigned to the instance
             .also {
-                it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
-                    // Values returned from our analyzer are passed to the attached listener
-                    // We log image analysis results here - you should do something useful
-                    // instead!
-                    Log.d(TAG, "Average luminosity: $luma")
-                })
+                it.setAnalyzer(cameraExecutor, Analyzer(requireActivity(), fragmentCameraBinding))
             }
 
         // Must unbind the use-cases before rebinding them
@@ -248,131 +210,16 @@ class CameraFragment : Fragment() {
             // A variable number of use-cases can be passed here -
             // camera provides access to CameraControl & CameraInfo
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageCapture, imageAnalyzer
+                this, cameraSelector, preview, imageAnalyzer
             )
 
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
-            observeCameraState(camera?.cameraInfo!!)
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
     }
 
-    private fun observeCameraState(cameraInfo: CameraInfo) {
-        cameraInfo.cameraState.observe(viewLifecycleOwner) { cameraState ->
-            run {
-                when (cameraState.type) {
-                    CameraState.Type.PENDING_OPEN -> {
-                        // Ask the user to close other camera apps
-                        Toast.makeText(
-                            context,
-                            "CameraState: Pending Open",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    CameraState.Type.OPENING -> {
-                        // Show the Camera UI
-                        Toast.makeText(
-                            context,
-                            "CameraState: Opening",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    CameraState.Type.OPEN -> {
-                        // Setup Camera resources and begin processing
-                        Toast.makeText(
-                            context,
-                            "CameraState: Open",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    CameraState.Type.CLOSING -> {
-                        // Close camera UI
-                        Toast.makeText(
-                            context,
-                            "CameraState: Closing",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    CameraState.Type.CLOSED -> {
-                        // Free camera resources
-                        Toast.makeText(
-                            context,
-                            "CameraState: Closed",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-
-            cameraState.error?.let { error ->
-                when (error.code) {
-                    // Open errors
-                    CameraState.ERROR_STREAM_CONFIG -> {
-                        // Make sure to setup the use cases properly
-                        Toast.makeText(
-                            context,
-                            "Stream config error",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    // Opening errors
-                    CameraState.ERROR_CAMERA_IN_USE -> {
-                        // Close the camera or ask user to close another camera app that's using the
-                        // camera
-                        Toast.makeText(
-                            context,
-                            "Camera in use",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    CameraState.ERROR_MAX_CAMERAS_IN_USE -> {
-                        // Close another open camera in the app, or ask the user to close another
-                        // camera app that's using the camera
-                        Toast.makeText(
-                            context,
-                            "Max cameras in use",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    CameraState.ERROR_OTHER_RECOVERABLE_ERROR -> {
-                        Toast.makeText(
-                            context,
-                            "Other recoverable error",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    // Closing errors
-                    CameraState.ERROR_CAMERA_DISABLED -> {
-                        // Ask the user to enable the device's cameras
-                        Toast.makeText(
-                            context,
-                            "Camera disabled",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    CameraState.ERROR_CAMERA_FATAL_ERROR -> {
-                        // Ask the user to reboot the device to restore camera function
-                        Toast.makeText(
-                            context,
-                            "Fatal error",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    // Closed errors
-                    CameraState.ERROR_DO_NOT_DISTURB_MODE_ENABLED -> {
-                        // Ask the user to disable the "Do Not Disturb" mode, then reopen the camera
-                        Toast.makeText(
-                            context,
-                            "Do not disturb mode enabled",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        }
-    }
 
     /**
      *  [androidx.camera.core.ImageAnalysis.Builder] requires enum value of
@@ -425,110 +272,53 @@ class CameraFragment : Fragment() {
      * <p>All we need to do is override the function `analyze` with our desired operations. Here,
      * we compute the average luminosity of the image by looking at the Y plane of the YUV frame.
      */
-    private class LuminosityAnalyzer(listener: LumaListener? = null) : ImageAnalysis.Analyzer {
-        private val frameRateWindow = 8
-        private val frameTimestamps = ArrayDeque<Long>(5)
-        private val listeners = ArrayList<LumaListener>().apply { listener?.let { add(it) } }
-        private var lastAnalyzedTimestamp = 0L
-        var framesPerSecond: Double = -1.0
-            private set
+    private class Analyzer(
+        val activity: FragmentActivity,
+        val binding: FragmentCameraBinding,
+    ) : ImageAnalysis.Analyzer {
 
-        /**
-         * Used to add listeners that will be called with each luma computed
-         */
-        fun onFrameAnalyzed(listener: LumaListener) = listeners.add(listener)
+        val analyzer: com.example.tensorflowlitelivetemplate.Analyzer =
+            Analyzer(activity, BoundingBoxDrawer(binding, activity))
+        var isFirst = true
 
-        /**
-         * Helper extension function used to extract a byte array from an image plane buffer
-         */
-        private fun ByteBuffer.toByteArray(): ByteArray {
-            rewind()    // Rewind the buffer to zero
-            val data = ByteArray(remaining())
-            get(data)   // Copy the buffer into a byte array
-            return data // Return the byte array
+        @SuppressLint("UnsafeOptInUsageError")
+        override fun analyze(image: ImageProxy) {
+            val startTime = System.currentTimeMillis()
+
+            val bitmap = toBitmap(image.image!!)!!
+            analyzer.analyze(bitmap)
+
+            val endTime = System.currentTimeMillis()
+            activity.runOnUiThread {
+                binding.timeView.text = "Time: ${endTime - startTime}ms"
+            }
+            image.close()
         }
 
-        /**
-         * Analyzes an image to produce a result.
-         *
-         * <p>The caller is responsible for ensuring this analysis method can be executed quickly
-         * enough to prevent stalls in the image acquisition pipeline. Otherwise, newly available
-         * images will not be acquired and analyzed.
-         *
-         * <p>The image passed to this method becomes invalid after this method returns. The caller
-         * should not store external references to this image, as these references will become
-         * invalid.
-         *
-         * @param image image being analyzed VERY IMPORTANT: Analyzer method implementation must
-         * call image.close() on received images when finished using them. Otherwise, new images
-         * may not be received or the camera may stall, depending on back pressure setting.
-         *
-         */
-        override fun analyze(image: ImageProxy) {
-            // If there are no listeners attached, we don't need to perform analysis
-            if (listeners.isEmpty()) {
-                image.close()
-                return
-            }
 
-            // Keep track of frames analyzed
-            val currentTime = System.currentTimeMillis()
-            frameTimestamps.push(currentTime)
+        private fun save(bmp: Bitmap) {
+            val filePath = Environment.getExternalStorageDirectory().absolutePath + "/Download"
+            val dir = File(filePath)
+            if (!dir.exists()) dir.mkdirs()
+            val file = File(dir, "test.bmp")
+            val fOut = FileOutputStream(file)
+            bmp.compress(Bitmap.CompressFormat.PNG, 85, fOut)
+            fOut.flush()
+            fOut.close()
+        }
 
-            // Compute the FPS using a moving average
-            while (frameTimestamps.size >= frameRateWindow) frameTimestamps.removeLast()
-            val timestampFirst = frameTimestamps.peekFirst() ?: currentTime
-            val timestampLast = frameTimestamps.peekLast() ?: currentTime
-            framesPerSecond = 1.0 / ((timestampFirst - timestampLast) /
-                    frameTimestamps.size.coerceAtLeast(1).toDouble()) * 1000.0
-
-            // Analysis could take an arbitrarily long amount of time
-            // Since we are running in a different thread, it won't stall other use cases
-
-            lastAnalyzedTimestamp = frameTimestamps.first
-
-
-            /* // Since format in ImageAnalysis is YUV, image.planes[0] contains the luminance plane
-             val buffer = image.planes[0].buffer
-
-             // Extract image data from callback object
-             val data = buffer.toByteArray()
-
-             // Convert the data into an array of pixel values ranging 0-255
-             val pixels = data.map { it.toInt() and 0xFF }
-
-             // Compute average luminance for the image
-             val luma = pixels.average()
-
-             // Call all listeners with new value
-             listeners.forEach { it(luma) }*/
-
-
-            val previewWidth = 300
-            val previewHeight = 300
-            val rgbBytes = IntArray(previewWidth * previewHeight)
-            val planes: Array<out ImageProxy.PlaneProxy> = image.planes
-            val yRowStride = planes[0].rowStride
-            val uvRowStride = planes[1].rowStride
-            val uvPixelStride = planes[1].pixelStride
-
-            ImageUtils.convertYUV420ToARGB8888(
-                planes[0].buffer,
-                planes[1].buffer,
-                planes[2].buffer,
-                previewWidth,
-                previewHeight,
-                yRowStride,
-                uvRowStride,
-                uvPixelStride,
-                rgbBytes
+        private fun toBitmap(image: Image): Bitmap? {
+            val planes = image.planes
+            val buffer: ByteBuffer = planes[0].buffer
+            val pixelStride = planes[0].pixelStride
+            val rowStride = planes[0].rowStride
+            val rowPadding = rowStride - pixelStride * image.width
+            val bitmap = Bitmap.createBitmap(
+                image.width + rowPadding / pixelStride,
+                image.height, Bitmap.Config.ARGB_8888
             )
-
-            Log.e("CameraFragment", "converted yuv to rgb")
-
-            //val results: List<Detector.Recognition> = detector.recognizeImage(croppedBitmap)
-
-            image.close()
+            bitmap.copyPixelsFromBuffer(buffer)
+            return bitmap
         }
     }
 

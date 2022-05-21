@@ -3,11 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.257" />
+        <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/drawable/bounding_box.xml" value="0.3085" />
         <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/drawable/button_round_corners.xml" value="0.2125" />
         <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/drawable/ic_back.xml" value="0.2125" />
+        <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/drawable/ic_launcher_background.xml" value="0.257" />
         <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/layout/camera_ui_container.xml" value="0.20520833333333333" />
-        <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/layout/fragment_camera.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/layout/fragment_camera.xml" value="0.22" />
         <entry key="..\:/Users/aurlb/StudioProjects/TensorflowLiteLiveTemplate/app/src/main/res/layout/fragment_gallery.xml" value="0.20520833333333333" />
       </map>
     </option>
