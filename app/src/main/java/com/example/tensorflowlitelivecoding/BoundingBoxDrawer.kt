@@ -29,7 +29,7 @@ class BoundingBoxDrawer (binding: FragmentCameraBinding, private val activity: A
     private val cropWidth = 300.0
     private val cropHeight = 300.0
 
-    fun drawBoundingBoxes(boxes: List<RectF>, labels: List<String>, squish: Boolean) {
+    fun drawBoundingBoxes(boxes: List<RectF>, labels: List<String>, squish: Boolean = false) {
         val heightFactor: Double
         val widthFactor: Double
         val heightOffset: Int

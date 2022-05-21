@@ -35,7 +35,6 @@ android {
         viewBinding true
     }
 
-    // TODO: add
     aaptOptions {
         noCompress "tflite"
     }
@@ -44,16 +43,14 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
 
-    // TODO: Build off of nightly TensorFlow Lite
     implementation 'org.tensorflow:tensorflow-lite:2.8.0'
-    implementation 'org.tensorflow:tensorflow-lite-metadata:0.4.0'
     implementation 'org.tensorflow:tensorflow-lite-task-vision:0.4.0'
     implementation 'org.tensorflow:tensorflow-lite-support:0.4.0'
 
     // Kotlin lang
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
 
     // App compat and UI things
     implementation 'androidx.appcompat:appcompat:1.4.1'
