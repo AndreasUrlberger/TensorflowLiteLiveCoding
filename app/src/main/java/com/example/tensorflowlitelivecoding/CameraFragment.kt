@@ -1,4 +1,4 @@
-package com.example.tensorflowlitelivetemplate
+package com.example.tensorflowlitelivecoding
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -21,8 +21,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.Navigation
-import com.example.tensorflowlitelivetemplate.databinding.CameraUiContainerBinding
-import com.example.tensorflowlitelivetemplate.databinding.FragmentCameraBinding
+import com.example.tensorflowlitelivecoding.databinding.CameraUiContainerBinding
+import com.example.tensorflowlitelivecoding.databinding.FragmentCameraBinding
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
@@ -273,7 +273,7 @@ class CameraFragment : Fragment() {
         val binding: FragmentCameraBinding,
     ) : ImageAnalysis.Analyzer {
 
-        val analyzer: com.example.tensorflowlitelivetemplate.Analyzer =
+        val analyzer: com.example.tensorflowlitelivecoding.Analyzer =
             Analyzer(activity, BoundingBoxDrawer(binding, activity))
         var isFirst = true
 

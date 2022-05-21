@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.example.tensorflowlitelivetemplate
+package com.example.tensorflowlitelivecoding
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import com.example.tensorflowlitelivetemplate.databinding.ActivityMainBinding
+import com.example.tensorflowlitelivecoding.databinding.ActivityMainBinding
 
 private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 

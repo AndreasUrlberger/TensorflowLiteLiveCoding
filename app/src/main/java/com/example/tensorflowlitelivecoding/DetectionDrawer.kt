@@ -1,10 +1,10 @@
-package com.example.tensorflowlitelivetemplate
+package com.example.tensorflowlitelivecoding
 
 import android.app.Activity
 import android.graphics.Rect
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
-import com.example.tensorflowlitelivetemplate.databinding.FragmentCameraBinding
+import com.example.tensorflowlitelivecoding.databinding.FragmentCameraBinding
 import org.tensorflow.lite.task.vision.detector.Detection
 import kotlin.math.roundToInt
 

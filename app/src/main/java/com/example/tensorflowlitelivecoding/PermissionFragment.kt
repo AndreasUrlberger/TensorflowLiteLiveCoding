@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.tensorflowlitelivetemplate
+package com.example.tensorflowlitelivecoding
 
 import android.Manifest
 import android.content.Context

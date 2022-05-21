@@ -1,13 +1,11 @@
-package com.example.tensorflowlitelivetemplate
+package com.example.tensorflowlitelivecoding
 
 import android.app.Activity
 import android.graphics.Rect
 import android.graphics.RectF
-import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintSet
-import com.example.tensorflowlitelivetemplate.databinding.FragmentCameraBinding
-import org.tensorflow.lite.task.vision.detector.Detection
+import com.example.tensorflowlitelivecoding.databinding.FragmentCameraBinding
 import kotlin.math.roundToInt
 
 class BoundingBoxDrawer (binding: FragmentCameraBinding, private val activity: Activity) {

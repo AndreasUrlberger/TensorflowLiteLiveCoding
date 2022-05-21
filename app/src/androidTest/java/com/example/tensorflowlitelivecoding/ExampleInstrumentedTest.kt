@@ -1,4 +1,4 @@
-package com.example.tensorflowlitelivetemplate
+package com.example.tensorflowlitelivecoding
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -20,7 +20,7 @@
 
     <fragment
         android:id="@+id/permissions_fragment"
-        android:name="com.example.tensorflowlitelivetemplate.PermissionsFragment"
+        android:name="com.example.tensorflowlitelivecoding.PermissionsFragment"
         android:label="PermissionsFragment">
 
         <action
@@ -33,7 +33,7 @@
 
     <fragment
         android:id="@+id/camera_fragment"
-        android:name="com.example.tensorflowlitelivetemplate.CameraFragment"
+        android:name="com.example.tensorflowlitelivecoding.CameraFragment"
         android:label="CameraFragment">
 
         <action
