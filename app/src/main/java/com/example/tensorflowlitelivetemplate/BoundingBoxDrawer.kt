@@ -43,7 +43,6 @@ class BoundingBoxDrawer (binding: FragmentCameraBinding, private val activity: A
             heightFactor = viewWidth / cropWidth
             widthFactor = viewWidth / cropWidth
             heightOffset = (viewHeight - viewWidth) / 2
-            Log.e("BoundingBoxDrawer", "heightoffset $heightOffset")
         }
         val constraints = ConstraintSet()
         constraints.clone(boundingContainer)

@@ -65,7 +65,6 @@ class CameraFragment : Fragment() {
         override fun onDisplayRemoved(displayId: Int) = Unit
         override fun onDisplayChanged(displayId: Int) = view?.let { view ->
             if (displayId == this@CameraFragment.displayId) {
-                Log.d(TAG, "Rotation changed: ${view.display.rotation}")
                 imageAnalyzer?.targetRotation = view.display.rotation
             }
         } ?: Unit
@@ -166,10 +165,7 @@ class CameraFragment : Fragment() {
     private fun bindCameraUseCases() {
 
         // Get screen metrics used to setup camera for full screen resolution
-        Log.d(TAG, "Screen metrics: ${metrics.widthPixels} x ${metrics.heightPixels}")
-
         val screenAspectRatio = aspectRatio(metrics.widthPixels, metrics.heightPixels)
-        Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
 
         val rotation = fragmentCameraBinding.viewFinder.display.rotation
 
