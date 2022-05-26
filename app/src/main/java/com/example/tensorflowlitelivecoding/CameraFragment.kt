@@ -274,7 +274,7 @@ class CameraFragment : Fragment() {
     ) : ImageAnalysis.Analyzer {
 
         val analyzer: com.example.tensorflowlitelivecoding.Analyzer =
-            Analyzer(activity, BoundingBoxDrawer(binding, activity))
+            Analyzer(activity.applicationContext, BoundingBoxDrawer(binding, activity))
         var isFirst = true
 
         @SuppressLint("UnsafeOptInUsageError")
