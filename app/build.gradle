@@ -33,6 +33,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        mlModelBinding true
     }
 }
 
@@ -48,6 +49,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    implementation 'org.tensorflow:tensorflow-lite-support:0.4.0'
+    implementation 'org.tensorflow:tensorflow-lite-metadata:0.4.0'
+    implementation 'org.tensorflow:tensorflow-lite-task-vision:0.4.0'
 
     // Navigation library
     def nav_version = "2.4.2"
